@@ -6,24 +6,41 @@ const bodyParser = require('body-parser');
 const schema = require('./schema/schema');
 
 const app = express();
-
 // Replace with your mongoLab URI
-const MONGO_URI = '';
+
+const MONGO_URI =
+  'mongodb+srv://magnumm:magnumm@lyricaldb-afvow.mongodb.net/test?retryWrites=true&w=majority';
 if (!MONGO_URI) {
-  throw new Error('You must provide a MongoLab URI');
+  throw new Error('You must provide a Mongo Atlas URI');
 }
 
-mongoose.Promise = global.Promise;
-mongoose.connect(MONGO_URI);
-mongoose.connection
-    .once('open', () => console.log('Connected to MongoLab instance.'))
-    .on('error', error => console.log('Error connecting to MongoLab:', error));
+const connectDatabase = MONGO_URI => {
+  return mongoose
+    .connect(MONGO_URI, { useNewUrlParser: true })
+    .then(() => {
+      console.log('Connected to MongoDB at', MONGO_URI);
+      return mongoose.connection;
+    })
+    .catch(err => console.debug(`Database connection error: ${err.message}`));
+};
 
+// connectDatabase(databaseUri: string): Promise<any> {
+//   return Mongoose.connect(databaseUri, { useMongoClient: true })
+//       .then(() => {
+//           console.log('Connected to MongoDB at ', databaseUri);
+//           return Mongoose.connection;
+//       })
+//       .catch(err => debug(`Database connection error: ${err.message}`));
+// }
+connectDatabase(MONGO_URI);
 app.use(bodyParser.json());
-app.use('/graphql', expressGraphQL({
-  schema,
-  graphiql: true
-}));
+app.use(
+  '/graphql',
+  expressGraphQL({
+    schema,
+    graphiql: true
+  })
+);
 
 const webpackMiddleware = require('webpack-dev-middleware');
 const webpack = require('webpack');
