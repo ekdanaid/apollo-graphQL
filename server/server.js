@@ -24,14 +24,6 @@ const connectDatabase = MONGO_URI => {
     .catch(err => console.debug(`Database connection error: ${err.message}`));
 };
 
-// connectDatabase(databaseUri: string): Promise<any> {
-//   return Mongoose.connect(databaseUri, { useMongoClient: true })
-//       .then(() => {
-//           console.log('Connected to MongoDB at ', databaseUri);
-//           return Mongoose.connection;
-//       })
-//       .catch(err => debug(`Database connection error: ${err.message}`));
-// }
 connectDatabase(MONGO_URI);
 app.use(bodyParser.json());
 app.use(
